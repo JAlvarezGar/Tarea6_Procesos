@@ -1,7 +1,11 @@
 package tarea6_1;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.util.regex.Matcher;
@@ -42,38 +46,38 @@ public class Tarea6 {
         // EL FORMATO DE DATOS PARA EL LOG SERA txt
         SimpleFormatter sp = new SimpleFormatter();
         fh.setFormatter(sp);
-        
-        
 
+        peticionNombres();
+
+    }
+
+    static void peticionNombres() throws FileNotFoundException, IOException {
         nombre = JOptionPane.showInputDialog("Cual es tu nombre");
         // true para que utilice el patrón nombre de usuario
         flag = true;
         patron(flag);
         nombreF = JOptionPane.showInputDialog("introduzca "
-                + "un nombre de fichero...");
+                + "un nombre de fichero..."
+                + "\nmáximo 8 caracteres . y tres caracteres de extensión");
         // false para utilizar el patrón nombre fichero
         flag = false;
         patron(flag);
-
         // MUESTRO POR PANTALLA EL CONENIDO DEL FICHERO .log
         FileReader fr = new FileReader("c:\\tarea6/miFichero.log");
         BufferedReader br = new BufferedReader(fr);
-        System.out.println("****************************************");
+        System.out.println("\n\n\n****************************************");
         System.out.println("******** EL CONTENIDO DEL .log *********");
         System.out.println("****************************************");
-        
+
         boolean c;
         while (c = br.read() != -1) {
 
             System.out.println(br.readLine());
 
         }
-    }
-    
-    static void Peticiones(){
-    
-    
-    
+        // SALE DE LA APLICACION
+        System.exit(0);
+
     }
 
     /**
@@ -81,53 +85,93 @@ public class Tarea6 {
      * @param a para diferenciar si es nombre de usuario "true" o es un nombre
      * de fichero "false"
      */
-    static void patron(boolean a) {
-        boolean comprobante=true;
+    static void patron(boolean a) throws IOException {
+        boolean comprobante = true;
 
         // PRIMERO ME EVALUA EL NOMBRE 
         if (a) {
-            while(comprobante){
-            
-              // PARA EL NOMBRE ADMITE SOLO  OCHO minúsculas
-            patNombre = Pattern.compile("[a-z]{8}");
-            mat = patNombre.matcher(nombre);
-            if (mat.find()) {
+            while (comprobante) {
 
-                // EL PATRON COINCIDE
-                logger.log(Level.INFO, "NOMBRE DE USUARIO " + nombre
-                        + " cumple con la estructura prevista...\n");
+                // PARA EL NOMBRE ADMITE SOLO  OCHO minúsculas
+                patNombre = Pattern.compile("[a-z]{8}");
+                mat = patNombre.matcher(nombre);
+                if (mat.find()) {
 
-            } else if (!mat.find()) {
+                    // EL PATRON COINCIDE
+                    logger.log(Level.INFO, "NOMBRE DE USUARIO " + nombre
+                            + " cumple con la estructura prevista...\n");
+                    comprobante = false;
 
-                //EL PATRON NO COINCIDE
-                logger.log(Level.WARNING, "NOMBRE DE USUARIO " + nombre
-                        + " no cumple con el patrón sugerido...\n");
+                } else if (!mat.find()) {
 
+                    //EL PATRON NO COINCIDE
+                    logger.log(Level.WARNING, "NOMBRE DE USUARIO " + nombre
+                            + " no cumple con el patrón sugerido...\n");
+                    peticionNombres();
+
+                }
             }
-            }
-
-          
-            
-            
 
         } else if (!a) {
-            // PARA EL FICHERO ADMITE MAYUSCULAS, minúsculas y número
-            // COMO EXTEXION SOLO ADMITE TRES minúsculas 
-            patFichero = Pattern.compile("[a-z]{1,8}.[a-z]{3}");
-            // AHORA EVALUA EL NOMBRE DEL FICHERO
-            matF = patFichero.matcher(nombreF);
+            while (comprobante) {
 
-            if (matF.find()) {
-                // EL PATRON COINCIDE
-                logger.log(Level.INFO, "NOMBRE DE FICHERO " + nombreF
-                        + " cumple con la estructura prevista...\n");
+                // PARA EL FICHERO ADMITE MAYUSCULAS, minúsculas y número
+                // COMO EXTEXION SOLO ADMITE TRES minúsculas 
+                patFichero = Pattern.compile("[a-z]{1,8}.[a-z]{3}");
+                // AHORA EVALUA EL NOMBRE DEL FICHERO
+                matF = patFichero.matcher(nombreF);
 
-            } else if (!matF.find()) {
-                //EL PATRON NO COINCIDE
-                logger.log(Level.WARNING, "NOMBRE DE FICHERO " + nombreF
-                        + " NO cumple con el patrón sugerido...\n");
+                if (matF.find()) {
+                    // EL PATRON COINCIDE
+                    logger.log(Level.INFO, "EL USUARIO " + nombre
+                            + " CREA EL FICHERO ==>" + nombreF
+                            + "\n");
 
+                    //creo la ruta del fichero
+                    String ruta = "c:\\tarea6/" + nombreF;
+                    File fichero = new File(ruta);
+                    if (fichero.exists()) {
+                        System.out.println("\n\n\n");
+                        System.out.println("************************");
+                        System.out.println("***** CONTENIDO DE *****");
+                        System.out.println("*** " + fichero + " ***\n\n");
+
+                        FileReader fr = new FileReader(fichero);
+                        BufferedReader br = new BufferedReader(fr);
+
+                        // MUESTRO CONTENIDO DEL FICHERO
+                        String c;
+                        while ((c = br.readLine()) != null) {
+
+                            System.out.println(c);
+
+                        }
+                        comprobante = false;
+                        br.close();
+                        fr.close();
+
+                    } else {
+
+                        // SI NO CREO EL FICHERO
+                        FileWriter archivo = new FileWriter(ruta);
+
+                        BufferedWriter bw = new BufferedWriter(archivo);
+                        bw.write(ruta);
+
+                        comprobante = false;
+                        bw.close();
+                        archivo.close();
+                    }
+
+                } else if (!matF.find()) {
+                    //EL PATRON NO COINCIDE
+                    logger.log(Level.WARNING, "NOMBRE DE FICHERO " + nombreF
+                            + " NO cumple con el patrón sugerido");
+                    peticionNombres();
+
+                }
             }
+
         }
 
     }
