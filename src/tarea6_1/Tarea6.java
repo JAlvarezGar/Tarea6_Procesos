@@ -52,16 +52,19 @@ public class Tarea6 {
     }
 
     static void peticionNombres() throws FileNotFoundException, IOException {
-        nombre = JOptionPane.showInputDialog("Cual es tu nombre");
-        // true para que utilice el patrón nombre de usuario
-        flag = true;
-        patron(flag);
-        nombreF = JOptionPane.showInputDialog("introduzca "
-                + "un nombre de fichero..."
-                + "\nmáximo 8 caracteres . y tres caracteres de extensión");
-        // false para utilizar el patrón nombre fichero
-        flag = false;
-        patron(flag);
+        nombre();
+//        nombre = JOptionPane.showInputDialog("Cual es tu nombre");
+//        // true para que utilice el patrón nombre de usuario
+//        flag = true;
+//        patron(flag);
+
+        nombreFichero();
+//        nombreF = JOptionPane.showInputDialog("introduzca "
+//                + "un nombre de fichero..."
+//                + "\nmáximo 8 caracteres . y tres caracteres de extensión");
+//        // false para utilizar el patrón nombre fichero
+//        flag = false;
+//        patron(flag);
         // MUESTRO POR PANTALLA EL CONENIDO DEL FICHERO .log
         FileReader fr = new FileReader("c:\\tarea6/miFichero.log");
         BufferedReader br = new BufferedReader(fr);
@@ -78,6 +81,23 @@ public class Tarea6 {
         // SALE DE LA APLICACION
         System.exit(0);
 
+    }
+
+    static void nombre() throws IOException {
+        nombre = JOptionPane.showInputDialog("Cual es tu nombre");
+        // true para que utilice el patrón nombre de usuario
+        flag = true;
+        patron(flag);
+    }
+
+    static void nombreFichero() throws IOException {
+
+        nombreF = JOptionPane.showInputDialog("introduzca "
+                + "un nombre de fichero..."
+                + "\nmáximo 8 caracteres . y tres caracteres de extensión");
+        // false para utilizar el patrón nombre fichero
+        flag = false;
+        patron(flag);
     }
 
     /**
@@ -107,7 +127,7 @@ public class Tarea6 {
                     //EL PATRON NO COINCIDE
                     logger.log(Level.WARNING, "NOMBRE DE USUARIO " + nombre
                             + " no cumple con el patrón sugerido...\n");
-                    peticionNombres();
+                    nombre();
 
                 }
             }
@@ -117,7 +137,7 @@ public class Tarea6 {
 
                 // PARA EL FICHERO ADMITE MAYUSCULAS, minúsculas y número
                 // COMO EXTEXION SOLO ADMITE TRES minúsculas 
-                patFichero = Pattern.compile("[a-z]{1,8}.[a-z]{3}");
+                patFichero = Pattern.compile("^[a-z]{1,8}\\.[a-z]{3}$");
                 // AHORA EVALUA EL NOMBRE DEL FICHERO
                 matF = patFichero.matcher(nombreF);
 
@@ -147,8 +167,8 @@ public class Tarea6 {
 
                         }
                         comprobante = false;
-                        br.close();
-                        fr.close();
+//                        br.close();
+//                        fr.close();
 
                     } else {
 
@@ -159,15 +179,16 @@ public class Tarea6 {
                         bw.write(ruta);
 
                         comprobante = false;
-                        bw.close();
-                        archivo.close();
+//                        bw.close();
+//                        archivo.close();
                     }
 
                 } else if (!matF.find()) {
                     //EL PATRON NO COINCIDE
                     logger.log(Level.WARNING, "NOMBRE DE FICHERO " + nombreF
                             + " NO cumple con el patrón sugerido");
-                    peticionNombres();
+
+                    nombreFichero();
 
                 }
             }
